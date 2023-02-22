@@ -36,7 +36,7 @@ String clientId = "NAME-FOR-MQTT-CLIENT"; //MQTT reconnect
 //part for MQTT
 #define humidity_topic "esp8266/dht22/humidity"
 #define temperature_topic "esp8266/dht22/temperature"
-#define perceived temperature_topic "esp8266/dht22/perc_temp"
+#define perceived_temperature_topic "esp8266/dht22/perc_temp"
 #define status_topic "esp8266/dht22/status"
 #define durationSleep 600  // in Sec -> 10min.
 #define DHTPIN 14
@@ -66,7 +66,6 @@ void setup() {
       ;
   }
 
-  setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
   if (!client.connected()) {
     reconnect();
@@ -87,9 +86,9 @@ void setup() {
   client.publish(humidity_topic, String(hum).c_str(), true);
 
   Serial.print(F("perceived temperature = "));
-  Serial.print(String(hum).c_str());
+  Serial.print(String(hi).c_str());
   Serial.println(" °C");
-  client.publish(humidity_topic, String(hum).c_str(), true);
+  client.publish(perceived_temperature_topic, String(hi).c_str(), true);
   
   Serial.print(F("Status = "));
   client.publish(status_topic, "Sensor in deep-sleep");
@@ -134,7 +133,7 @@ void reconnect() {
     if (client.connect(clientId.c_str(), mqtt_user, mqtt_password)) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish(status_topic, "Sen-Keller alive");
+      client.publish(status_topic, ESPHostname);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
